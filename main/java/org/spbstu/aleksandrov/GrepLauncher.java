@@ -21,22 +21,22 @@ import java.util.List;
 
 public class GrepLauncher {
 
-    @Argument(required = true, metaVar = "GrepRequest", usage = "Ask to grep")
+    @Argument(required = true, metaVar = "GrepRequest")
     private String grepRequest;
 
-    @Option(name = "-v", metaVar = "InvertConditionFlag", usage = "Invert")
+    @Option(name = "-v", metaVar = "InvertConditionFlag")
     private boolean invert;
 
-    @Option(name = "-i", metaVar = "IgnoreRegisterFlag", usage = "Register")
+    @Option(name = "-i", metaVar = "IgnoreRegisterFlag")
     private boolean register;
 
-    @Option(name = "-r", metaVar = "RegexFlag", usage = "Regex")
+    @Option(name = "-r", metaVar = "RegexFlag")
     private boolean regex;
 
-    @Argument(metaVar = "CombinationToSearch", index = 1, usage = "word")
+    @Argument(metaVar = "CombinationToSearch", index = 1)
     private String word;
 
-    @Argument(required = true, metaVar = "InputName", index = 2, usage = "Input file name")
+    @Argument(required = true, metaVar = "InputName", index = 2)
     private String inputFileName;
 
     public static void main(String[] args){
