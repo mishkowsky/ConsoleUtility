@@ -16,13 +16,10 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import java.io.IOException;
-import java.util.List;
+
+import java.io.*;
 
 public class GrepLauncher {
-
-    @Argument(required = true, metaVar = "GrepRequest")
-    private String grepRequest;
 
     @Option(name = "-v", metaVar = "InvertConditionFlag")
     private boolean invert;
@@ -33,38 +30,50 @@ public class GrepLauncher {
     @Option(name = "-r", metaVar = "RegexFlag")
     private boolean regex;
 
-    @Argument(metaVar = "CombinationToSearch", index = 1)
+    @Argument(required = true, metaVar = "CombinationToSearch")
     private String word;
 
-    @Argument(required = true, metaVar = "InputName", index = 2)
-    private String inputFileName;
+    @Argument(metaVar = "InputFile", index = 1)
+    private File inputFile;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new GrepLauncher().launch(args);
     }
 
     private void launch(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
+
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.print(e.getMessage());
             return;
         }
-        if (!grepRequest.equals("grep")) {
-            System.err.print("No grep request was found");
-            return;
+
+        if (inputFile == null) {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                String line = br.readLine();
+                while (line != null && !line.equals("")) {
+                    if (new Grep(line).grep(invert, register, regex, word)) System.out.println(line);
+                    line = br.readLine();
+                }
+            } catch (IOException e) {
+                System.err.print(e.getMessage());
+            }
         }
-        Grep grep = new Grep(inputFileName);
-        List<String> result;
-        try {
-            result = grep.grep(invert, register, regex, word);
-        } catch (IOException e) {
-            System.err.print(e.getMessage());
-            return;
-        }
-        for (String line : result) {
-            System.out.println(line);
+
+        if (inputFile != null) {
+            try (FileReader fr = new FileReader(inputFile)) {
+                BufferedReader br = new BufferedReader(fr);
+                String line = br.readLine();
+                while (line != null) {
+                    if (new Grep(line).grep(invert, register, regex, word)) System.out.println(line);
+                    line = br.readLine();
+                }
+            } catch (IOException e) {
+                System.err.print(e.getMessage());
+            }
         }
     }
 

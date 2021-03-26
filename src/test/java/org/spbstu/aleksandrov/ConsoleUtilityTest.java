@@ -1,8 +1,9 @@
 package org.spbstu.aleksandrov;
 
 import org.junit.jupiter.api.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+
+import java.io.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConsoleUtilityTest {
@@ -27,19 +28,25 @@ public class ConsoleUtilityTest {
     }
 
     @Test
-    public void grep() {
-        assertEquals("Come hither, Sleep," + newLine, main(new String[]{"grep", "hither", "input\\input.txt"}));
+    public void grep() throws FileNotFoundException {
+        assertEquals("Come hither, Sleep," + newLine, main(new String[]{"hither", "src/test/resources/input.txt"}));
         assertEquals("But lo! the morning peeps" + newLine +
-                "Lo! to the vault" + newLine,
-                main(new String[]{"grep", "-i", "lo", "input\\input.txt"}));
+                        "Lo! to the vault" + newLine,
+                main(new String[]{"-i", "lo", "src/test/resources/input.txt"}));
         assertEquals("Come hither, Sleep," + newLine +
-                        "And my griefs unfold:" + newLine + newLine +
+                        "And my griefs unfold:" + newLine +
                         "Of paved heaven," + newLine +
                         "With sorrow fraught" + newLine +
                         "My notes are driven:" + newLine +
                         "And with tempests play." + newLine,
-                main(new String[]{"grep", "-v", "-r", "-i", "\\bthe\\b", "input\\input.txt"}));
-        assertEquals("Argument \"GrepRequest\" is required", main(new String[]{}));
-        assertEquals("No grep request was found", main(new String[]{"notGrep", "word", "someFile.txt"}));
+                main(new String[]{"-v", "-r", "-i", "\\btHe\\b", "src/test/resources/input.txt"}));
+        assertEquals("Argument \"CombinationToSearch\" is required", main(new String[]{}));
+        assertEquals("someFile.txt (Не удается найти указанный файл)",
+                main(new String[]{"-i", "and", "someFile.txt"}));
+
+        InputStream oldIn = System.in;
+        System.setIn(new BufferedInputStream(new FileInputStream("src/test/resources/input.txt")));
+        assertEquals("Come hither, Sleep," + newLine, main(new String[]{"-i", "-r", "\\bcomE\\b"}));
+        System.setIn(oldIn);
     }
 }
