@@ -41,6 +41,7 @@ public class GrepLauncher {
     }
 
     private void launch(String[] args) {
+
         CmdLineParser parser = new CmdLineParser(this);
 
         try {
@@ -52,18 +53,26 @@ public class GrepLauncher {
 
         if (inputFile == null) {
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                String line = br.readLine();
-                while (line != null && !line.equals("")) {
-                    if (new Grep(line).grep(invert, register, regex, word)) System.out.println(line);
-                    line = br.readLine();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+
+                    StringBuilder sb;
+                    sb = new StringBuilder();
+                    String line = br.readLine();
+
+                    while (line != null && !line.equals("")) {
+                        if (new Grep(line).grep(invert, register, regex, word)) {
+                            sb.append(line);
+                            sb.append(System.getProperty("line.separator"));
+                        }
+                        line = br.readLine();
+                    }
+
+                    System.out.print(sb.toString());
                 }
             } catch (IOException e) {
                 System.err.print(e.getMessage());
             }
-        }
-
-        if (inputFile != null) {
+        } else {
             try (FileReader fr = new FileReader(inputFile)) {
                 BufferedReader br = new BufferedReader(fr);
                 String line = br.readLine();
@@ -72,7 +81,7 @@ public class GrepLauncher {
                     line = br.readLine();
                 }
             } catch (IOException e) {
-                System.err.print(e.getMessage());
+                System.err.print(inputFile.getName() + " (No such file)");
             }
         }
     }

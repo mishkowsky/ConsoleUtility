@@ -3,6 +3,8 @@ package org.spbstu.aleksandrov;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,24 +30,28 @@ public class ConsoleUtilityTest {
     }
 
     @Test
-    public void grep() throws FileNotFoundException {
-        assertEquals("Come hither, Sleep," + newLine, main(new String[]{"hither", "src/test/resources/input.txt"}));
+    public void grep() throws FileNotFoundException, URISyntaxException {
+
+        URL url = GrepLauncher.class.getResource("/input.txt");
+        File file = new File(url.toURI());
+
+        assertEquals("Come hither, Sleep," + newLine, main(new String[]{"hither", file.getPath()}));
         assertEquals("But lo! the morning peeps" + newLine +
                         "Lo! to the vault" + newLine,
-                main(new String[]{"-i", "lo", "src/test/resources/input.txt"}));
+                main(new String[]{"-i", "lo", file.getPath()}));
         assertEquals("Come hither, Sleep," + newLine +
                         "And my griefs unfold:" + newLine +
                         "Of paved heaven," + newLine +
                         "With sorrow fraught" + newLine +
                         "My notes are driven:" + newLine +
                         "And with tempests play." + newLine,
-                main(new String[]{"-v", "-r", "-i", "\\btHe\\b", "src/test/resources/input.txt"}));
+                main(new String[]{"-v", "-r", "-i", "\\btHe\\b", file.getPath()}));
         assertEquals("Argument \"CombinationToSearch\" is required", main(new String[]{}));
-        assertEquals("someFile.txt (Не удается найти указанный файл)",
+        assertEquals("someFile.txt (No such file or directory)",
                 main(new String[]{"-i", "and", "someFile.txt"}));
 
         InputStream oldIn = System.in;
-        System.setIn(new BufferedInputStream(new FileInputStream("src/test/resources/input.txt")));
+        System.setIn(new BufferedInputStream(new FileInputStream(file.getPath())));
         assertEquals("Come hither, Sleep," + newLine, main(new String[]{"-i", "-r", "\\bcomE\\b"}));
         System.setIn(oldIn);
     }
