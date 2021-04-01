@@ -47,7 +47,7 @@ public class ConsoleUtilityTest {
                         "And with tempests play." + newLine,
                 main(new String[]{"-v", "-r", "-i", "\\btHe\\b", file.getPath()}));
         assertEquals("Argument \"CombinationToSearch\" is required", main(new String[]{}));
-        assertEquals("someFile.txt (No such file or directory)",
+        assertEquals("someFile.txt (No such file)",
                 main(new String[]{"-i", "and", "someFile.txt"}));
 
         InputStream oldIn = System.in;
